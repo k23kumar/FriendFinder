@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FriendFinder</title>
+
+  <!-- Latest compiled and minified CSS & JS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"> -->
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<style>
+
+.question-div {
+    padding-bottom: 20px
+}
+</style>
+</head>
+<body>
+    <div class="container" "d-inline p-2 bg-primary text-white">
+        <div class="header">
+            <h2>Survey Questions</h2>
+            <br>
+            <p class="border-bottom"></p>
+            <h3>About You</h3>
+            <br>
+            <form>
+                <div class="form-group">
+                    <label for="inputEmail">Name (Required)</label>
+                    <input type="name" class="form-control" id="inputName" aria-describedby="nameHelp" placeholder="">
+                </div>
+                    <br>
+                <div class="form-group">
+                    <label for="inputPicture">Link to Photo Image (Required)</label>
+                    <input type="picture" class="form-control" id="inputPicture" aria-describedby="picturehelp" placeholder="">
+                </div>
+                    <br>
+
+            </form>
+        </div>
+        <p class="border-bottom"></p>
+
+        <div id ="questions">
+            <h3>Question 1</h3>
+            <h5>How much do you like President Trump?</h5   >
+                <div class="form-row align-items-center">
+                    <div class="col-auto my-1">
+                    <label class="mr-sm-2" for="inlineFormCustomSelect"></label>
+                    <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                        <option selected>Choose...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="3">4</option>
+                        <option value="3">5</option>
+                    </select>
+                    </div>
+                </div>
+            <br>
+            
+        </div>
+        <br>
+        <button type="submit" id="submit" class="btn btn-success">Submit</button>
+
+         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Your most compatible friend is:</h5>
+                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h2 id="modal-friend"></h2>
+                    <img id="modal-picture" src="">
+                    
+                </div>
+                </div>
+            </div>
+            </div>
+
+    </div>
+
+<script>
+
+var questions = [
+"Your mind is always buzzing with unexplored ideas and plans.", 
+"Generally speaking, you rely more on your experience than your imagination.",
+"You find it easy to stay relaxed and focused even when there is some pressure.",
+"You rarely do something just out of sheer curiosity.",
+"People can rarely upset you.",
+"It is often difficult for you to relate to other people’s feelings.",
+"In a discussion, truth should be more important than people’s sensitivities.",
+"You rarely get carried away by fantasies and ideas.",
+"You think that everyone’s views should be respected regardless of whether they are supported by facts or not.",
+"You feel more energetic after spending time with a group of people."
+];
+
+$(document).ready( () => {
+
+    function createQuestions() {
+       $("#questions").empty();
+        for (var i = 0; i<questions.length; i++) {
+            var div = $("<div>").addClass("question-div");
+            $("<h3>").html("Question " + (i+1)).appendTo(div);
+            $("<h5>").html(questions[i]).appendTo(div);
+            var select = $("<select>").attr("id", "q" + (i+1));
+            var options = [1, 2, 3, 4, 5];
+            $("<option>").html("Choose one (1 for strongly disagree, 5 for strongly agree").appendTo(select);
+            for (let j = 0; j < options.length; j++) {
+                let option = $("<option>").attr("value", options[j] );
+                option.html(options[j]);
+                option.appendTo(select);
+            }
+            div.append(select);
+            $("#questions").append(div) 
+        }
+    }
+    
+    createQuestions();
+                
+});
+
+$("#submit").on("click", function(event){
+    event.preventDefault();
+    // get values of each input
+    // then store in an object
+    // post object to api/friends
+   var userInfo = {
+       name: $("#inputName").val().trim(),
+       photo:$("#inputPicture").val().trim(),
+       scores: []
+   }
+
+   for (var i = 0; i < questions.length; i++) {
+       userInfo.scores.push($("#q" + (i+1)).val())
+   }
+
+   $.post("/api/friends", userInfo, function(data){
+       console.log(data);
+       $('#modal-friend').html(data.name)
+       $('#modal-picture').attr("src", data.photo)
+       $('#exampleModal').modal('toggle')
+
+   });  
+
+}) 
+
+</script>
+
+</body>
+            
+
+
+        
