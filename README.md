@@ -1,1 +1,1 @@
-# FriendFinder
+This app utilizes express to handle routing and executes 'get' and 'post' requests. The app takes in user input from a survey to find the most compatible 'friend'. 
